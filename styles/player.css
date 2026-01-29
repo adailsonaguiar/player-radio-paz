@@ -1,24 +1,249 @@
+/* Rádio Paz FM - Miniplayer Clean & Moderno */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-#pButton {
-  border: none;
-  outline: none;
-  background: transparent;
-  width: 50px;
-  height: 50px;
-}
-.fas {
-  font-size: 1.4rem;
-  color: #fff;
+:root {
+  --player-bg: #ffffff;
+  --player-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  --accent-color: #FFA430;
+  --accent-hover: #cc8400;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --live-color: #ef4444;
+  --border-radius: 16px;
 }
 
-.play .fa-pause {
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex;
+  background: #f3f4f6;
+}
+
+.radio-miniplayer {
+  background: var(--player-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--player-shadow);
+  padding: 16px 20px;
+  width: 320px;
+  transition: all 0.3s ease;
+}
+
+.radio-miniplayer:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+  transform: translateY(-2px);
+}
+
+.player-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* Info Section */
+.player-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pulse {
+  width: 8px;
+  height: 8px;
+  background: var(--text-secondary);
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+.radio-miniplayer.playing .pulse {
+  background: var(--live-color);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}
+
+.live-text {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.radio-miniplayer.playing .live-text {
+  color: var(--live-color);
+}
+
+.station-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Controls Section */
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.play-btn {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent-color);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.play-btn:hover {
+  background: var(--accent-hover);
+  transform: scale(1.05);
+}
+
+.play-btn:active {
+  transform: scale(0.95);
+}
+
+.play-btn i {
+  font-size: 16px;
+  position: absolute;
+}
+
+.play-btn .play-icon {
+  margin-left: 2px;
+}
+
+/* Play/Pause Icon Toggle */
+.play-btn .pause-icon {
   display: none;
 }
-.pause .fa-play {
+
+.radio-miniplayer.playing .play-btn .play-icon {
   display: none;
+}
+
+.radio-miniplayer.playing .play-btn .pause-icon {
+  display: block;
+}
+
+/* Volume Controls */
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.volume-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.volume-btn:hover {
+  background: #f3f4f6;
+  color: var(--text-primary);
+}
+
+.volume-btn i {
+  font-size: 14px;
+}
+
+/* Volume Icon Toggle */
+.volume-btn .volume-off {
+  display: none;
+}
+
+.radio-miniplayer.muted .volume-btn .volume-on {
+  display: none;
+}
+
+.radio-miniplayer.muted .volume-btn .volume-off {
+  display: block;
+  color: var(--live-color);
+}
+
+/* Volume Slider */
+.volume-slider {
+  width: 60px;
+  height: 4px;
+  border-radius: 2px;
+  background: #e5e7eb;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  cursor: pointer;
+  border: none;
+}
+
+/* Responsive */
+@media (max-width: 360px) {
+  .radio-miniplayer {
+    width: 100%;
+    max-width: 300px;
+    padding: 12px 16px;
+  }
+
+  .volume-slider {
+    width: 40px;
+  }
+
+  .play-btn {
+    width: 44px;
+    height: 44px;
+  }
 }

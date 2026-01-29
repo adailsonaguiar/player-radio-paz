@@ -1,73 +1,135 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rádio Paz FM - Player</title>
     <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
-
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles/player.css" />
   </head>
   <body>
-    <div class="player-wrapper">
-      <audio id="music" preload="true">
+    <div class="radio-miniplayer">
+      <audio id="radioStream" preload="none">
         <source
-          src="https://8030.brasilstream.com.br/stream?identifica=5360246618292850000"
+          src="https://player.radiopazpalmas.com.br/stream"
           type="audio/mpeg"
         />
-        <source
-          src="https://8030.brasilstream.com.br/mp3?identifica=5360246618292850000"
-          type="audio/mpeg"
-        />
-        <source
-          src="https://8030.brasilstream.com.br/stream.m3u?identifica=5360246618292850000"
-          type="audio/mpegurl"
-        />
-        <source
-          src="https://8030.brasilstream.com.br/mp3.m3u?identifica=5360246618292850000"
-          type="audio/mpegurl"
-        />
-        <a href="https://8030.brasilstream.com.br/stream.m3u"
-          >Clique Aqui para Ouvir!</a
-        >
       </audio>
-      <button id="pButton" class="play">
-        <i class="fas fa-pause"></i>
-        <i class="fas fa-play"></i>
-      </button>
+
+      <div class="player-content">
+        <div class="player-info">
+          <div class="live-indicator">
+            <span class="pulse"></span>
+            <span class="live-text">AO VIVO</span>
+          </div>
+          <div class="station-name">Rádio Paz FM</div>
+        </div>
+
+        <div class="player-controls">
+          <button id="playBtn" class="play-btn" aria-label="Play/Pause">
+            <i class="fas fa-play play-icon"></i>
+            <i class="fas fa-pause pause-icon"></i>
+          </button>
+
+          <div class="volume-control">
+            <button id="volumeBtn" class="volume-btn" aria-label="Volume">
+              <i class="fas fa-volume-up volume-on"></i>
+              <i class="fas fa-volume-mute volume-off"></i>
+            </button>
+            <input
+              type="range"
+              id="volumeSlider"
+              class="volume-slider"
+              min="0"
+              max="100"
+              value="80"
+            />
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
-      var music = document.getElementById("music"); // id for audio element
-      var pButton = document.getElementById("pButton"); // play button
-   
-      function onMute() {
-        if (music.paused) {
-          music.play();
-          pButton.className = "pause";
-          console.log("@TOCANDO RADIO PAZ FM...");
-        } else {
-          if (music.muted) {
-            music.muted = false;
-            pButton.className = "pause";
-            console.log("@TOCANDO RADIO PAZ FM (COM SOM)...");
+      (function () {
+        const audio = document.getElementById("radioStream");
+        const playBtn = document.getElementById("playBtn");
+        const volumeBtn = document.getElementById("volumeBtn");
+        const volumeSlider = document.getElementById("volumeSlider");
+        const player = document.querySelector(".radio-miniplayer");
+
+        let isPlaying = false;
+        audio.volume = 0.8;
+
+        function togglePlay() {
+          if (isPlaying) {
+            audio.pause();
+            player.classList.remove("playing");
+            isPlaying = false;
           } else {
-            music.muted = true;
-            pButton.className = "play";
-            console.log("@TOCANDO RADIO PAZ FM (SEM SOM)...");
+            audio.play();
+            player.classList.add("playing");
+            isPlaying = true;
           }
         }
-      }
 
-      function changeBackground() {
-        document.body.style.background = 'blue'
-      }
+        function toggleMute() {
+          audio.muted = !audio.muted;
+          player.classList.toggle("muted", audio.muted);
+        }
 
-      pButton.addEventListener("click", onMute);
+        function changeVolume() {
+          audio.volume = volumeSlider.value / 100;
+          if (audio.volume === 0) {
+            audio.muted = true;
+            player.classList.add("muted");
+          } else {
+            audio.muted = false;
+            player.classList.remove("muted");
+          }
+        }
+
+        playBtn.addEventListener("click", togglePlay);
+        volumeBtn.addEventListener("click", toggleMute);
+        volumeSlider.addEventListener("input", changeVolume);
+
+        // Autoplay ao carregar a página
+        window.addEventListener("load", () => {
+          audio.play().then(() => {
+            player.classList.add("playing");
+            isPlaying = true;
+          }).catch(() => {
+            // Navegadores bloqueiam autoplay sem interação do usuário
+            // Tenta tocar ao primeiro clique na página
+            document.addEventListener("click", function autoplayOnClick() {
+              if (!isPlaying) {
+                audio.play();
+                player.classList.add("playing");
+                isPlaying = true;
+              }
+              document.removeEventListener("click", autoplayOnClick);
+            }, { once: true });
+          });
+        });
+
+        // Atualiza estado visual quando áudio para/inicia
+        audio.addEventListener("playing", () => {
+          player.classList.add("playing");
+          isPlaying = true;
+        });
+
+        audio.addEventListener("pause", () => {
+          player.classList.remove("playing");
+          isPlaying = false;
+        });
+      })();
     </script>
   </body>
 </html>
